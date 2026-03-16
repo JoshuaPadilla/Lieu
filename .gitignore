@@ -1,0 +1,67 @@
+# --- General / OS ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+error.log
+logs/
+
+# --- Environment / Secrets (VERY IMPORTANT) ---
+# Never commit your API keys or Database URLs
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+
+# --- Dependencies ---
+# We ignore these because they are huge; we reinstall them via 'npm install'
+node_modules/
+bower_components/
+jspm_packages/
+
+# --- Build Outputs ---
+dist/
+build/
+.next/
+out/
+.docusaurus/
+.cache/
+
+# --- Backend Specific (Node/Express/Nest) ---
+lib/
+artifacts/
+*.db
+*.sqlite
+
+# --- Mobile Specific (React Native / Expo / Flutter) ---
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace
+*.xcscheme
+*.xcresult
+
+# Android
+android/app/build/
+android/.gradle/
+android/local.properties
+*.keystore
+*.apk
+*.aab
+
+# Expo
+.expo/
+web-build/
+
+# Flutter (if applicable)
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+
+# --- Testing ---
+coverage/
+.nyc_output/

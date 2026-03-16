@@ -1,0 +1,207 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+	--font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+	--font-serif: "Fraunces", Georgia, serif;
+}
+
+/* Map shadcn/ui design tokens to project CSS variables */
+@theme inline {
+	--color-background: var(--bg);
+	--color-foreground: var(--ink);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--ink-soft);
+	--color-border: var(--line);
+	--color-input: var(--line-strong);
+	--color-ring: var(--ring);
+	--color-primary: var(--footer);
+	--color-primary-foreground: #fff;
+	--color-secondary: var(--muted);
+	--color-secondary-foreground: var(--ink);
+	--color-destructive: #dc3333;
+	--color-destructive-foreground: #fff;
+	--color-accent: var(--muted);
+	--color-accent-foreground: var(--ink);
+	--radius-sm: 0.375rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.625rem;
+	--radius-xl: 0.75rem;
+}
+
+:root {
+	color-scheme: light;
+	--bg: #f5f2ed;
+	--surface: #fcfbf8;
+	--ink: #2d384a;
+	--ink-soft: #6f7b8a;
+	--line: #e5ded4;
+	--line-strong: #d6cdbf;
+	--muted: #f0ebe4;
+	--accent: #e8745d;
+	--ring: #6f7b8a;
+	--footer: #234438;
+	--footer-ink: #7fbaa4;
+	--card-shadow: 0 18px 30px rgba(41, 53, 70, 0.08);
+	--map-bg: #c7dce2;
+
+	/* Compatibility tokens used in existing components */
+	--text-main: var(--ink);
+	--text-soft: var(--ink-soft);
+	--bg-base: var(--bg);
+	--header-bg: color-mix(in srgb, var(--surface) 92%, white 8%);
+	--sea-ink: var(--ink);
+	--sea-ink-soft: var(--ink-soft);
+	--chip-bg: color-mix(in srgb, var(--surface) 92%, white 8%);
+	--chip-line: var(--line-strong);
+	--link-bg-hover: var(--muted);
+}
+
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--bg: #0b1523;
+	--surface: #111d2d;
+	--ink: #ebf2ff;
+	--ink-soft: #9ca8ba;
+	--line: #1e314a;
+	--line-strong: #29415f;
+	--muted: #152338;
+	--accent: #f29956;
+	--ring: #94a3b8;
+	--footer: #113428;
+	--footer-ink: #79c0a6;
+	--card-shadow: 0 24px 42px rgba(0, 0, 0, 0.4);
+	--map-bg: #0f2545;
+
+	--text-main: var(--ink);
+	--text-soft: var(--ink-soft);
+	--bg-base: var(--bg);
+	--header-bg: color-mix(in srgb, var(--surface) 88%, black 12%);
+	--sea-ink: var(--ink);
+	--sea-ink-soft: var(--ink-soft);
+	--chip-bg: color-mix(in srgb, var(--surface) 88%, black 12%);
+	--chip-line: var(--line-strong);
+	--link-bg-hover: var(--muted);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	color: var(--ink);
+	font-family: var(--font-sans);
+	background-color: var(--bg);
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	color: inherit;
+}
+
+.page-wrap {
+	width: min(1120px, 100% - 1.6rem);
+	margin-inline: auto;
+}
+
+.hero-shell {
+	position: relative;
+	overflow: visible;
+}
+
+.hero-shell::before {
+	content: none;
+}
+
+.landing-display {
+	font-family: var(--font-serif);
+}
+
+.nav-link {
+	text-decoration: none;
+	color: var(--ink-soft);
+	transition: color 180ms ease;
+}
+
+.nav-link:hover,
+.nav-link.is-active {
+	color: var(--ink);
+}
+
+.map-grid {
+	background-color: var(--map-bg);
+	background-image:
+		linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--line-strong) 65%, transparent) 1px,
+			transparent 1px
+		),
+		linear-gradient(
+			color-mix(in srgb, var(--line-strong) 65%, transparent) 1px,
+			transparent 1px
+		),
+		radial-gradient(
+			circle at 70% 30%,
+			rgba(255, 255, 255, 0.25),
+			transparent 32%
+		);
+	background-size:
+		34px 34px,
+		34px 34px,
+		cover;
+	background-position: -1px -1px;
+}
+
+.map-pin {
+	position: absolute;
+	height: 18px;
+	width: 18px;
+	border-radius: 999px;
+	border: 2px solid color-mix(in srgb, var(--surface) 90%, white 10%);
+	background: var(--accent);
+	box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 28%, transparent);
+	transform: translate(-50%, -50%);
+}
+
+.map-pin::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	height: 28px;
+	width: 28px;
+	border-radius: 999px;
+	transform: translate(-50%, -50%);
+	background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.map-note {
+	position: absolute;
+	max-width: 220px;
+	border-radius: 12px;
+	border: 1px solid var(--line-strong);
+	background: color-mix(in srgb, var(--surface) 90%, white 10%);
+	padding: 0.55rem 0.7rem;
+	box-shadow: var(--card-shadow);
+}
+
+@media (max-width: 767px) {
+	.page-wrap {
+		width: min(1120px, 100% - 1rem);
+	}
+}
+
+/* maplibre-gl popup reset (mapcn) */
+@layer base {
+	.maplibregl-popup-content {
+		background: transparent !important;
+		box-shadow: none !important;
+		padding: 0 !important;
+		border-radius: 0 !important;
+	}
+	.maplibregl-popup-tip {
+		display: none !important;
+	}
+}
