@@ -6,7 +6,14 @@ import { LandingMap } from "#/components/LandingMap";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/_unAuthenticated/")({
+	component: App,
+	beforeLoad: async ({ context }) => {
+		if (context.auth.session) {
+			console.log("User is authenticated, redirecting to onboarding...");
+		}
+	},
+});
 
 const press = [
 	"LonelyPlanet",

@@ -9,86 +9,198 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as UnAuthenticatedRouteRouteImport } from './routes/_unAuthenticated/route'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as UnAuthenticatedIndexRouteImport } from './routes/_unAuthenticated/index'
+import { Route as UnAuthenticatedLoginRouteImport } from './routes/_unAuthenticated/login'
+import { Route as UnAuthenticatedAboutRouteImport } from './routes/_unAuthenticated/about'
+import { Route as AuthenticatedUserIndexRouteImport } from './routes/_authenticated/user/index'
+import { Route as AuthenticatedOnboardingIndexRouteImport } from './routes/_authenticated/onboarding/index'
 
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const UnAuthenticatedRouteRoute = UnAuthenticatedRouteRouteImport.update({
+  id: '/_unAuthenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnAuthenticatedIndexRoute = UnAuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => UnAuthenticatedRouteRoute,
 } as any)
+const UnAuthenticatedLoginRoute = UnAuthenticatedLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => UnAuthenticatedRouteRoute,
+} as any)
+const UnAuthenticatedAboutRoute = UnAuthenticatedAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => UnAuthenticatedRouteRoute,
+} as any)
+const AuthenticatedUserIndexRoute = AuthenticatedUserIndexRouteImport.update({
+  id: '/user/',
+  path: '/user/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnboardingIndexRoute =
+  AuthenticatedOnboardingIndexRouteImport.update({
+    id: '/onboarding/',
+    path: '/onboarding/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/login': typeof LoginRoute
+  '/': typeof UnAuthenticatedIndexRoute
+  '/register': typeof RegisterRoute
+  '/about': typeof UnAuthenticatedAboutRoute
+  '/login': typeof UnAuthenticatedLoginRoute
+  '/onboarding/': typeof AuthenticatedOnboardingIndexRoute
+  '/user/': typeof AuthenticatedUserIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/login': typeof LoginRoute
+  '/': typeof UnAuthenticatedIndexRoute
+  '/register': typeof RegisterRoute
+  '/about': typeof UnAuthenticatedAboutRoute
+  '/login': typeof UnAuthenticatedLoginRoute
+  '/onboarding': typeof AuthenticatedOnboardingIndexRoute
+  '/user': typeof AuthenticatedUserIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/login': typeof LoginRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_unAuthenticated': typeof UnAuthenticatedRouteRouteWithChildren
+  '/register': typeof RegisterRoute
+  '/_unAuthenticated/about': typeof UnAuthenticatedAboutRoute
+  '/_unAuthenticated/login': typeof UnAuthenticatedLoginRoute
+  '/_unAuthenticated/': typeof UnAuthenticatedIndexRoute
+  '/_authenticated/onboarding/': typeof AuthenticatedOnboardingIndexRoute
+  '/_authenticated/user/': typeof AuthenticatedUserIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login'
+  fullPaths: '/' | '/register' | '/about' | '/login' | '/onboarding/' | '/user/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login'
-  id: '__root__' | '/' | '/about' | '/login'
+  to: '/' | '/register' | '/about' | '/login' | '/onboarding' | '/user'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/_unAuthenticated'
+    | '/register'
+    | '/_unAuthenticated/about'
+    | '/_unAuthenticated/login'
+    | '/_unAuthenticated/'
+    | '/_authenticated/onboarding/'
+    | '/_authenticated/user/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  LoginRoute: typeof LoginRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  UnAuthenticatedRouteRoute: typeof UnAuthenticatedRouteRouteWithChildren
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/_unAuthenticated': {
+      id: '/_unAuthenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof UnAuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_unAuthenticated/': {
+      id: '/_unAuthenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UnAuthenticatedIndexRouteImport
+      parentRoute: typeof UnAuthenticatedRouteRoute
+    }
+    '/_unAuthenticated/login': {
+      id: '/_unAuthenticated/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof UnAuthenticatedLoginRouteImport
+      parentRoute: typeof UnAuthenticatedRouteRoute
+    }
+    '/_unAuthenticated/about': {
+      id: '/_unAuthenticated/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof UnAuthenticatedAboutRouteImport
+      parentRoute: typeof UnAuthenticatedRouteRoute
+    }
+    '/_authenticated/user/': {
+      id: '/_authenticated/user/'
+      path: '/user'
+      fullPath: '/user/'
+      preLoaderRoute: typeof AuthenticatedUserIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding/': {
+      id: '/_authenticated/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof AuthenticatedOnboardingIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedOnboardingIndexRoute: typeof AuthenticatedOnboardingIndexRoute
+  AuthenticatedUserIndexRoute: typeof AuthenticatedUserIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedOnboardingIndexRoute: AuthenticatedOnboardingIndexRoute,
+  AuthenticatedUserIndexRoute: AuthenticatedUserIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface UnAuthenticatedRouteRouteChildren {
+  UnAuthenticatedAboutRoute: typeof UnAuthenticatedAboutRoute
+  UnAuthenticatedLoginRoute: typeof UnAuthenticatedLoginRoute
+  UnAuthenticatedIndexRoute: typeof UnAuthenticatedIndexRoute
+}
+
+const UnAuthenticatedRouteRouteChildren: UnAuthenticatedRouteRouteChildren = {
+  UnAuthenticatedAboutRoute: UnAuthenticatedAboutRoute,
+  UnAuthenticatedLoginRoute: UnAuthenticatedLoginRoute,
+  UnAuthenticatedIndexRoute: UnAuthenticatedIndexRoute,
+}
+
+const UnAuthenticatedRouteRouteWithChildren =
+  UnAuthenticatedRouteRoute._addFileChildren(UnAuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  LoginRoute: LoginRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  UnAuthenticatedRouteRoute: UnAuthenticatedRouteRouteWithChildren,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

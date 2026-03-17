@@ -8,9 +8,12 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import Footer from "#/components/Footer";
 import Header from "#/components/Header";
+import type { AuthContextType } from "#/context/auth_context";
 import "../styles.css";
 
-interface MyRouterContext {}
+interface MyRouterContext {
+	auth: AuthContextType;
+}
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	component: RootComponent,

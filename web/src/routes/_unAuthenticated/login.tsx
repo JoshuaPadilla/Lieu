@@ -2,25 +2,30 @@ import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Separator } from "#/components/ui/separator";
+import { useAuth } from "#/context/auth_context";
 import logo from "@/assets/images/lieu_logo.png";
 import { createFileRoute } from "@tanstack/react-router";
 import { Eye, EyeOff } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/_unAuthenticated/login")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
+	const { signIn, oAuthSignIn } = useAuth();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 
-	function handleSubmit(e: FormEvent<HTMLFormElement>) {
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// TODO: wire up auth
-		console.log("sign in", { email, password });
-	}
+		signIn(email, password);
+	};
+
+	const handleGoogleSignin = () => {
+		oAuthSignIn("google");
+	};
 
 	return (
 		<div className="flex min-h-screen">
@@ -137,7 +142,7 @@ function RouteComponent() {
 					</form>
 
 					{/* Divider */}
-					<div className="my-6 flex items-center gap-3">
+					<div className="my-6 flex items-center justify-center gap-3">
 						<Separator />
 						<span className="text-xs text-muted-foreground shrink-0">
 							Or continue with
@@ -146,11 +151,12 @@ function RouteComponent() {
 					</div>
 
 					{/* Social buttons */}
-					<div className="flex gap-3">
+					<div className="flex flex-col gap-3">
 						<Button
 							type="button"
 							variant="outline"
-							className="flex-1 rounded-full gap-2"
+							className="flex-1 rounded-xl gap-2 py-2"
+							onClick={handleGoogleSignin}
 						>
 							<svg
 								className="size-4 shrink-0"
@@ -178,7 +184,7 @@ function RouteComponent() {
 						<Button
 							type="button"
 							variant="outline"
-							className="flex-1 rounded-full gap-2"
+							className="flex-1 rounded-xl gap-2 py-2"
 						>
 							<svg
 								className="size-4 shrink-0"
@@ -190,16 +196,6 @@ function RouteComponent() {
 							Apple
 						</Button>
 					</div>
-
-					<p className="mt-6 text-center text-sm text-muted-foreground">
-						Don't have an account?{" "}
-						<a
-							href="#"
-							className="font-semibold text-(--accent) hover:underline"
-						>
-							Signup
-						</a>
-					</p>
 				</div>
 
 				<footer className="mt-8 text-center text-[0.68rem] font-medium uppercase tracking-widest text-muted-foreground">
