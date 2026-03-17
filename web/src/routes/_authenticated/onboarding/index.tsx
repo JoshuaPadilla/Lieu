@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 import { Button } from "#/components/ui/button";
 import {
 	Card,
@@ -10,9 +11,8 @@ import {
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { useAuth } from "#/context/auth_context";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
-	AtSign,
 	Camera,
 	Check,
 	ChevronLeft,
@@ -25,21 +25,27 @@ import {
 	Plus,
 	User,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/onboarding/")({
 	component: RouteComponent,
-	beforeLoad: async ({ context }) => {
-		if (context.auth.session?.user.user_metadata.isOnboarded) {
-			throw redirect({ to: "/user" });
-		}
-	},
-	loader: ({ context }) => {
+	// beforeLoad: async ({ context }) => {
+	// 	if (context.auth.session?.user.user_metadata.isOnboarded) {
+	// 		throw redirect({ to: "/user" });
+	// 	}
+	// },
+	loader: async ({ context }) => {
 		// Source of truth is the session metadata
-		const currentStep = context.auth.session?.user.user_metadata.user_name
+
+		console.log(
+			"Done setup:",
+			context.auth.session?.user.user_metadata.done_setup,
+		);
+
+		const step = context.auth.session?.user.user_metadata.done_setup
 			? 2
 			: 1;
-		return { step: currentStep };
+		return { initialStep: step };
 	},
 });
 
@@ -130,16 +136,16 @@ function StepIndicator({ current }: { current: number }) {
 // ─── Step 1: Account Setup ────────────────────────────────────────────────────
 function AccountStep({
 	onNext,
+	email,
 }: {
-	onNext: (userName: string, password: string) => void;
+	onNext: (password: string) => void;
+	email: string;
 }) {
-	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirm, setConfirm] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirm, setShowConfirm] = useState(false);
 	const [errors, setErrors] = useState<{
-		username?: string;
 		password?: string;
 		confirm?: string;
 	}>({});
@@ -148,9 +154,6 @@ function AccountStep({
 
 	const validate = () => {
 		const next: typeof errors = {};
-		if (!username.trim()) next.username = "Username is required.";
-		else if (username.trim().length < 3)
-			next.username = "Must be at least 3 characters.";
 		if (!password) next.password = "Password is required.";
 		else if (password.length < 8)
 			next.password = "Must be at least 8 characters.";
@@ -164,7 +167,7 @@ function AccountStep({
 			setErrors(errs);
 			return;
 		}
-		onNext(username, password);
+		onNext(password);
 	};
 
 	return (
@@ -179,39 +182,17 @@ function AccountStep({
 					</CardTitle>
 				</div>
 				<CardDescription className="pl-12">
-					Choose a username and a strong password to get started.
+					Add a strong password to get started.
 				</CardDescription>
 			</CardHeader>
 
 			<CardContent className="flex flex-col gap-5">
 				{/* Username */}
 				<div className="flex flex-col gap-1.5">
-					<Label htmlFor="username">Username</Label>
+					<Label htmlFor="username">Email</Label>
 					<div className="relative flex items-center">
-						<span className="absolute left-2.5 flex items-center pointer-events-none">
-							<AtSign className="size-3.5 text-muted-foreground" />
-						</span>
-						<Input
-							id="username"
-							placeholder="johndoe"
-							className="pl-8"
-							value={username}
-							onChange={(e) => {
-								setUsername(e.target.value);
-								setErrors((p) => ({
-									...p,
-									username: undefined,
-								}));
-							}}
-							aria-invalid={!!errors.username}
-						/>
+						<Input id="email" value={email} disabled />
 					</div>
-					{errors.username && (
-						<p className="text-xs text-destructive flex items-center gap-1.5">
-							<span className="size-1.5 rounded-full bg-destructive shrink-0 inline-block" />
-							{errors.username}
-						</p>
-					)}
 				</div>
 
 				{/* Password */}
@@ -341,9 +322,11 @@ function AccountStep({
 function ProfileStep({
 	onBack,
 	onNext,
+	profileUrl,
 }: {
 	onBack: () => void;
 	onNext: () => void;
+	profileUrl?: string;
 }) {
 	return (
 		<>
@@ -364,17 +347,24 @@ function ProfileStep({
 			<CardContent className="flex flex-col gap-5">
 				{/* Avatar placeholder */}
 				<div className="flex justify-center py-1">
-					<div className="relative">
-						<div className="size-20 rounded-full border-2 border-dashed border-border bg-muted flex flex-col items-center justify-center gap-1 cursor-not-allowed select-none">
-							<Camera className="size-5 text-muted-foreground" />
-							<span className="text-[10px] text-muted-foreground font-medium">
-								Photo
-							</span>
+					{profileUrl ? (
+						<Avatar className="size-20 rounded-full border-2 border-dashed border-border bg-muted flex flex-col items-center justify-center gap-1 cursor-not-allowed select-none">
+							<AvatarImage src={profileUrl} />
+							<AvatarFallback>CN</AvatarFallback>
+						</Avatar>
+					) : (
+						<div className="relative">
+							<div className="size-20 rounded-full border-2 border-dashed border-border bg-muted flex flex-col items-center justify-center gap-1 cursor-not-allowed select-none">
+								<Camera className="size-5 text-muted-foreground" />
+								<span className="text-[10px] text-muted-foreground font-medium">
+									Photo
+								</span>
+							</div>
+							<div className="absolute -bottom-0.5 -right-0.5 size-6 rounded-full bg-(--accent) flex items-center justify-center shadow ring-2 ring-background cursor-not-allowed">
+								<Plus className="size-3.5 text-white" />
+							</div>
 						</div>
-						<div className="absolute -bottom-0.5 -right-0.5 size-6 rounded-full bg-(--accent) flex items-center justify-center shadow ring-2 ring-background cursor-not-allowed">
-							<Plus className="size-3.5 text-white" />
-						</div>
-					</div>
+					)}
 				</div>
 
 				<div className="flex flex-col gap-1.5">
@@ -438,9 +428,7 @@ function ProfileStep({
 	);
 }
 
-// ─── Step 3: Preferences (placeholder) ───────────────────────────────────────
-
-// ─── Step 4: Done ─────────────────────────────────────────────────────────────
+// ─── Step 3:one ─────────────────────────────────────────────────────────────
 const COMPLETED_ITEMS = [
 	"Account credentials created",
 	"Profile sections prepared",
@@ -514,13 +502,23 @@ function DoneStep({ onBack }: { onBack: () => void }) {
 
 // ─── Root component ───────────────────────────────────────────────────────────
 function RouteComponent() {
-	const { step } = Route.useLoaderData();
-	const { setAccount, isLoading: settingPassword, signOut } = useAuth();
-	const [currentStep, setCurrentStep] = useState(step);
+	const { initialStep } = Route.useLoaderData();
+	const { session } = useAuth();
 
-	const handleAccountNext = async (userName: string, password: string) => {
-		await setAccount(userName, password);
-		setCurrentStep(2);
+	const { setAccount, isLoading: settingPassword, signOut } = useAuth();
+	const [step, setCurrentStep] = useState(initialStep);
+
+	useEffect(() => {
+		setCurrentStep(initialStep);
+	}, [initialStep]);
+
+	const handleAccountNext = async (password: string) => {
+		try {
+			await setAccount(password);
+			setCurrentStep(2);
+		} catch (error) {
+			console.error("Account setup failed:", error);
+		}
 	};
 
 	return (
@@ -539,11 +537,17 @@ function RouteComponent() {
 					{/* Accent top bar */}
 					<div className="h-1 bg-linear-to-r from-(--accent) via-orange-400 to-amber-300" />
 
-					{step === 1 && <AccountStep onNext={handleAccountNext} />}
+					{step === 1 && (
+						<AccountStep
+							onNext={handleAccountNext}
+							email={session?.user.email || ""}
+						/>
+					)}
 					{step === 2 && (
 						<ProfileStep
 							onBack={() => setCurrentStep(1)}
 							onNext={() => setCurrentStep(3)}
+							profileUrl={session?.user.user_metadata.avatar_url}
 						/>
 					)}
 

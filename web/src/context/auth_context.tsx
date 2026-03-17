@@ -2,17 +2,17 @@
 import { supabase } from "@/lib/supabase";
 // import { useUserStore } from "@/stores/userStore";
 // import type { User } from "@/types/user";
-import type { Session } from "@supabase/supabase-js";
+import type { Session, User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export interface AuthContextType {
-	// user: User | null;
+	user: User | null;
 	session: Session | null;
 	isLoading: boolean;
 	signIn: (email: string, password: string) => Promise<void>;
 	signOut: () => Promise<void>;
 	oAuthSignIn: (provider: string) => Promise<void>;
-	setAccount: (user_name: string, password: string) => Promise<void>;
+	setAccount: (password: string) => Promise<void>;
 }
 
 // 1. Keep the context name distinct from the type name
@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	// const { fetchLoggedUser } = useUserStore();
-	// const [user, setUser] = useState<User | null>(null);
+	const [user, setUser] = useState<User | null>(null);
 	const [session, setSession] = useState<Session | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	// };
 	const oAuthSignIn = async (provider: string) => {
 		setIsLoading(true);
-		const { data, error } = await supabase.auth.signInWithOAuth({
+		const { error } = await supabase.auth.signInWithOAuth({
 			provider: provider as any,
 		});
 		if (error) {
@@ -46,18 +46,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		setIsLoading(false);
 	};
 
-	const setAccount = async (user_name: string, password: string) => {
+	const setAccount = async (password: string) => {
 		try {
 			setIsLoading(true);
 			const { error } = await supabase.auth.updateUser({
 				password,
 				data: {
-					user_name,
+					done_setup: true,
 				},
 			});
 		} catch (error) {
 			console.error("Error setting initial password:", error);
-			return;
+			throw error;
 		} finally {
 			setIsLoading(false);
 		}
@@ -97,8 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				setSession(session);
 
 				if (session) {
-					// await refreshUser();
-					// console.log("Session found on init:", session.access_token);
+					setUser(session.user);
 				}
 			} finally {
 				setIsLoading(false);
@@ -111,6 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			setSession(session);
+			setUser(session?.user ?? null); // Sync user state with session
 			setIsLoading(false);
 		});
 
@@ -122,6 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	return (
 		<AuthContext.Provider
 			value={{
+				user,
 				session,
 				isLoading,
 				signIn,
