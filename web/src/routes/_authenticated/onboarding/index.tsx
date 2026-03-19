@@ -17,6 +17,7 @@ import {
 	Check,
 	ChevronLeft,
 	ChevronRight,
+	Edit,
 	Eye,
 	EyeOff,
 	Lock,
@@ -328,6 +329,11 @@ function ProfileStep({
 	onNext: () => void;
 	profileUrl?: string;
 }) {
+	const [userName, setUserName] = useState("");
+	const [bio, setBio] = useState("");
+	const [city, setCity] = useState("");
+	const [avatar, setAvatar] = useState<File | null>(null);
+
 	return (
 		<>
 			<CardHeader className="pb-4">
@@ -348,9 +354,16 @@ function ProfileStep({
 				{/* Avatar placeholder */}
 				<div className="flex justify-center py-1">
 					{profileUrl ? (
-						<Avatar className="size-20 rounded-full border-2 border-dashed border-border bg-muted flex flex-col items-center justify-center gap-1 cursor-not-allowed select-none">
+						<Avatar className="size-20 rounded-full border-2 border-dashed border-border bg-muted flex flex-col items-center justify-center gap-1 cursor-not-allowed select-none relative">
 							<AvatarImage src={profileUrl} />
 							<AvatarFallback>CN</AvatarFallback>
+
+							<Button
+								variant={"default"}
+								className="z-10 absolute -bottom-0.5 -right-0.5 size-6 rounded-full bg-(--accent) flex items-center justify-center shadow ring-2 ring-background"
+							>
+								<Edit className="size-3.5 text-white" />
+							</Button>
 						</Avatar>
 					) : (
 						<div className="relative">
@@ -367,22 +380,29 @@ function ProfileStep({
 					)}
 				</div>
 
+				{/* User name */}
 				<div className="flex flex-col gap-1.5">
-					<Label htmlFor="display-name">Display Name</Label>
+					<Label htmlFor="display-name">User name</Label>
 					<Input
-						id="display-name"
-						placeholder="Coming soon…"
-						disabled
+						id="user_name"
+						placeholder="@username"
+						value={userName}
+						onChange={(e) => setUserName(e.target.value)}
 					/>
 				</div>
 
 				<div className="flex flex-col gap-1.5">
 					<Label htmlFor="bio">Bio</Label>
-					<Input id="bio" placeholder="Coming soon…" disabled />
+					<Input
+						id="bio"
+						placeholder="say something about yourself"
+						value={bio}
+						onChange={(e) => setBio(e.target.value)}
+					/>
 				</div>
 
 				<div className="flex flex-col gap-1.5">
-					<Label htmlFor="location">Location</Label>
+					<Label htmlFor="location">City</Label>
 					<div className="relative flex items-center">
 						<span className="absolute left-2.5 flex items-center pointer-events-none">
 							<MapPin className="size-3.5 text-muted-foreground" />
@@ -391,7 +411,6 @@ function ProfileStep({
 							id="location"
 							placeholder="Coming soon…"
 							className="pl-8"
-							disabled
 						/>
 					</div>
 				</div>
